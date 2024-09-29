@@ -1,5 +1,8 @@
 "use client";
 
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 import { useRef, useState } from "react";
 import { uploadImage } from "./actions";
 
@@ -7,6 +10,7 @@ export default function SocialMediaPage() {
 	const [dragActive, setDragActive] = useState(false);
 	const [uploading, setUploading] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const { toast } = useToast();
 
 	const handleDrag = (e: React.DragEvent) => {
 		e.preventDefault();
@@ -34,16 +38,45 @@ export default function SocialMediaPage() {
 		}
 	};
 
+	// const handleFiles = async (files: FileList) => {
+	// 	setUploading(true);
+	// 	const formData = new FormData();
+	// 	formData.append("image", files[0]);
+	// 	try {
+	// 		await uploadImage(formData);
+	// 		// Handle successful upload (e.g., show a success message)
+	// 	} catch (error) {
+	// 		console.error("Upload failed:", error);
+	// 		// Handle error (e.g., show an error message)
+	// 	}
+	// 	setUploading(false);
+	// };
 	const handleFiles = async (files: FileList) => {
 		setUploading(true);
+		toast({
+			title: "Uploading image",
+			description: "Please wait while we process your image.",
+		});
+
 		const formData = new FormData();
 		formData.append("image", files[0]);
 		try {
-			await uploadImage(formData);
-			// Handle successful upload (e.g., show a success message)
+			const result = await uploadImage(formData);
+			if (!result) {
+				throw new Error("Failed to upload image");
+			}
+			toast({
+				title: "Success",
+				description: result.toString(),
+				variant: "default",
+			});
 		} catch (error) {
 			console.error("Upload failed:", error);
-			// Handle error (e.g., show an error message)
+			toast({
+				title: "Error",
+				description: "Failed to upload image. Please try again.",
+				variant: "destructive",
+			});
 		}
 		setUploading(false);
 	};
@@ -57,12 +90,22 @@ export default function SocialMediaPage() {
 			<div className="max-w-4xl mx-auto">
 				<h2 className="text-xl mb-4 text-center">Last days upvote pictures</h2>
 				<div className="grid grid-cols-3 gap-4 mb-8">
-					{[1, 2, 3].map((i) => (
+					{[1, 2].map((i) => (
 						<div
 							key={i}
 							className="aspect-square border border-white/20 rounded"
 						></div>
 					))}
+					{/* display an image with the same configuration */}
+					<div className="aspect-square border border-white/20 rounded">
+						<Image
+							src="https://drive.google.com/uc?id=1OuhjiHH2BYSlLimJs96Byp3cNrG0j6M8&export=download"
+							alt="image"
+							width={400}
+							height={400}
+							className="object-cover"
+						/>
+					</div>
 				</div>
 
 				<h2 className="text-xl mb-4 text-center">
@@ -86,6 +129,7 @@ export default function SocialMediaPage() {
 						onChange={handleChange}
 						accept="image/*"
 						disabled={uploading}
+						name="image"
 					/>
 					{uploading
 						? "Uploading..."
@@ -122,6 +166,7 @@ export default function SocialMediaPage() {
 					))}
 				</div>
 			</div>
+			<Toaster />
 		</div>
 	);
 }
