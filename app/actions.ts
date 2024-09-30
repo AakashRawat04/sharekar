@@ -37,9 +37,29 @@ export async function uploadImage(formData: FormData) {
 
 	const fileBuffer = file.stream();
 
+	// Convert ReadableStream to AsyncIterable
+	const streamToAsyncIterable = (
+		stream: ReadableStream<Uint8Array<ArrayBufferLike>>
+	) => {
+		const reader = stream.getReader();
+		return {
+			[Symbol.asyncIterator]() {
+				return {
+					async next() {
+						const { done, value } = await reader.read();
+						if (done) {
+							return { done: true, value: undefined };
+						}
+						return { done: false, value };
+					},
+				};
+			},
+		};
+	};
+
 	const media = {
 		mimeType: file.type,
-		body: Readable.from(fileBuffer),
+		body: Readable.from(streamToAsyncIterable(fileBuffer)),
 	};
 
 	// Upload the file
@@ -59,13 +79,6 @@ export async function uploadImage(formData: FormData) {
 			type: "anyone",
 		},
 	});
-	// await drive.permissions.create({
-	// 	fileId: fileId,
-	// 	requestBody: {
-	// 		role: "reader",
-	// 		type: "anyone",
-	// 	},
-	// });
 
 	// Construct the file link
 	const fileLink = `https://drive.google.com/file/d/${fileId}/view`;
