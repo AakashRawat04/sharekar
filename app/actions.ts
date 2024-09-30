@@ -38,9 +38,7 @@ export async function uploadImage(formData: FormData) {
 	const fileBuffer = file.stream();
 
 	// Convert ReadableStream to AsyncIterable
-	const streamToAsyncIterable = (
-		stream: ReadableStream<Uint8Array<ArrayBufferLike>>
-	) => {
+	const streamToAsyncIterable = (stream: ReadableStream<Uint8Array>) => {
 		const reader = stream.getReader();
 		return {
 			[Symbol.asyncIterator]() {
