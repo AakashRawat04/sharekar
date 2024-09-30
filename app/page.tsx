@@ -67,7 +67,7 @@ export default function SocialMediaPage() {
 			}
 			toast({
 				title: "Success",
-				description: result.toString(),
+				description: `Image uploaded successfully. You can view it at ${result?.link}`,
 				variant: "default",
 			});
 		} catch (error) {
