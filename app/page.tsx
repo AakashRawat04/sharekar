@@ -67,7 +67,7 @@ export default function SocialMediaPage() {
 			}
 			toast({
 				title: "Success",
-				description: `Image uploaded successfully. You can view it at ${result?.link}`,
+				description: `Image uploaded successfully. You can view it at ${result.link}`,
 				variant: "default",
 			});
 		} catch (error) {
@@ -99,7 +99,8 @@ export default function SocialMediaPage() {
 					{/* display an image with the same configuration */}
 					<div className="aspect-square border border-white/20 rounded">
 						<Image
-							src="https://drive.google.com/uc?id=1OuhjiHH2BYSlLimJs96Byp3cNrG0j6M8&export=download"
+							// src="https://drive.google.com/file/d/1CEfs0wPJhAeNASfxUoxzf_aFh9xglKnx"
+							src="https://drive.google.com/uc?id=1CEfs0wPJhAeNASfxUoxzf_aFh9xglKnx"
 							alt="image"
 							width={400}
 							height={400}
